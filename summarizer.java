@@ -50,7 +50,7 @@ public class summarizer {
             } else {
                 oldScore = 0;
             }
-            wordScore.put(word, old_score + 1);
+            wordScore.put(word, oldScore + 1);
         }
 
         int senScore = 0;
@@ -71,7 +71,7 @@ public class summarizer {
         int endKey;
 
         for (int i = 0; i < nthMax - 1; i++){
-            for (int senSc; startScore.values())
+            for (int senSc : startScore.values())
             {
                 if(senSc > otherMax && secSc < maxMax)
                 {
@@ -83,7 +83,7 @@ public class summarizer {
                     if (startScore.keySet[x] == otherMax)
                     {
                         startKey = startScore.keySet[x];
-                        if (x = startScore.size()){
+                        if (x == startScore.size()){
                             endKey = wordList.length;
                         } else {
                             endKey = startScore.keySet[x+1];
@@ -102,14 +102,14 @@ public class summarizer {
 
     }
 
-    private static String getInput () // Gets input
+    public static String getInput () // Gets input
     {
         Scanner scanner = new Scanner (System.in);
         String rawInput = scanner.nextLine();
         return rawInput;
     }
 
-    private static String cleanup (String word)
+    public static String cleanup (String word)
     {
         String rawWord = word.toLowerCase();
         String cleanedWord = "";
@@ -126,7 +126,7 @@ public class summarizer {
         return cleanedWord;
     }
 
-    private static boolean isSentenceEnd (String word)
+    public static boolean isSentenceEnd (String word)
     {   
         // String[] fakeStop = {"Mr.", "Mrs", }; NOT IN USE, can hardcode if bottom doesnt work as well
         char[] wordChar = word.toCharArray();
