@@ -86,7 +86,7 @@ public class summarizer {
                 
                 for (int h : startScore.keySet())
                 {
-                    if (startScore.get(k) == otherMax)
+                    if (startScore.get(h) == otherMax)
                     {
                         startKey = h;
                         endKey = startEnd.get(startKey);
