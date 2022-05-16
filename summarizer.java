@@ -62,7 +62,16 @@ public class summarizer {
         }
 
         int nthMax = 5;
-        int maxMax = (Collections.max(startScore.values()));
+
+        int maxMax = 0;
+        for (int i: startScore.keySet())
+        {
+            if (startScore.get(i) > maxMax)
+            {
+                maxMax = startScore.get(i);
+            }
+        }
+
         int otherMax = 0;
         int startKey;
         int endKey;
@@ -75,11 +84,11 @@ public class summarizer {
                     otherMax = senSC;
                 }
                 
-                for (Entry<Integer, Integer> entry : startScore.entrySet())
+                for (int h : startScore.keySet())
                 {
-                    if (entry.getValue() == otherMax)
+                    if (startScore.get(k) == otherMax)
                     {
-                        startKey = entry.getKey();
+                        startKey = h;
                         endKey = startEnd.get(startKey);
                         break;
                     }
