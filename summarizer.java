@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.stream.IntStream;
-import java.util.Scanner;
-import java.util.HashMap;
+import java.util.*;
 
 public class summarizer {
     public static void main (String args[])
@@ -65,7 +62,7 @@ public class summarizer {
         }
 
         int nthMax = 5;
-        int maxMax = Collections.max(startScore.values());
+        int maxMax = (Collections.max(startScore.values()));
         int otherMax = 0;
         int startKey;
         int endKey;
@@ -78,16 +75,13 @@ public class summarizer {
                     otherMax = senSC;
                 }
                 
-                for (int x = 0; x < startScore.size() + 1; x ++)
+                for (Entry<Integer, Integer> entry : startScore.entrySet())
                 {
-                    if (startScore.keySet()[x] == otherMax)
+                    if (entry.getValue() == otherMax)
                     {
-                        startKey = startScore.keySet()[x];
-                        if (x == startScore.size()){
-                            endKey = wordList.length;
-                        } else {
-                            endKey = startScore.keySet()[x+1];
-                        }
+                        startKey = entry.getKey();
+                        endKey = startEnd.get(startKey);
+                        break;
                     }
                 }
 
