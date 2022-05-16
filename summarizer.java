@@ -73,20 +73,20 @@ public class summarizer {
         for (int i = 0; i < nthMax - 1; i++){
             for (int senSc : startScore.values())
             {
-                if(senSc > otherMax && secSc < maxMax)
+                if(senSc > otherMax && senSc < maxMax)
                 {
                     otherMax = senSC;
                 }
                 
                 for (int x = 0; x < startScore.size() + 1; x ++)
                 {
-                    if (startScore.keySet[x] == otherMax)
+                    if (startScore.keySet()[x] == otherMax)
                     {
-                        startKey = startScore.keySet[x];
+                        startKey = startScore.keySet()[x];
                         if (x == startScore.size()){
                             endKey = wordList.length;
                         } else {
-                            endKey = startScore.keySet[x+1];
+                            endKey = startScore.keySet()[x+1];
                         }
                     }
                 }
