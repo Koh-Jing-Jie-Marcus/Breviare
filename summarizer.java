@@ -9,7 +9,7 @@ public class summary {
         // Gets input, self explanatory
         String para = getInput(); 
 
-        // Splits raw input into its constituent words (roughly, this will be cleaned up later)
+        // Splits raw paragraph into its constituent words (roughly, this will be cleaned up later)
         String[] wordList = para.split(" "); 
 
         // Generates a HashMap (dictionary) to store the indiviual scores of each word
@@ -18,23 +18,47 @@ public class summary {
         // Additional HashMap to store where the sentences starts and end
         HashMap<Integer, Integer> startEnd = new HashMap<Integer, Integer>();
 
+        // Additional HashMap to store scores for sentences
+        HashMap<Integer, Integer> startScore = new HashMap<Integer, Integer>();
 
+        int start = 0;
+        while (start < wordList.length)
+        {
+            for (i = start; i < wordList.length + 1; i++)
+            {
+                if (isSentenceEnd(wordList[i]))
+                {
+                    startEnd.put(start, i);
+                    break;
+                }
+            }
+            start = i + 1;
+        }
 
-        // Iterates through every word in the word list
+        // Iterates through every word in the word list to assign score
         int oldScore;
         for (String word : wordList){
 
             // Cleans up word
             String cleaned = cleanup(word);
-
             if (wordScore.containsKey(cleaned))
             {
                 oldScore = wordScore.get(word);
-                
             } else {
                 oldScore = 0;
             }
             wordScore.put(word, old_score + 1);
+        }
+
+        int senScore = 0;
+        for (int startSen : startEnd.keySet()){
+            for (i = startSen; i < startEnd.get(startSen) + 1; i ++)
+            {
+                cleaned = cleanup(wordList[i]);
+                senScore += wordScore[cleaned];
+            }
+            startScore.put(startSen, senScore);
+            senScore = 0;
         }
 
     }
