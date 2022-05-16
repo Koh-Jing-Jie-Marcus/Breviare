@@ -3,7 +3,7 @@ import java.util.stream.IntStream;
 import java.util.Scanner;
 import java.util.HashMap;
 
-public class summary {
+public class summarizer {
     public static void main (String args[])
     {
         // Gets input, self explanatory
@@ -22,17 +22,20 @@ public class summary {
         HashMap<Integer, Integer> startScore = new HashMap<Integer, Integer>();
 
         int start = 0;
+        int lasti;
         while (start < wordList.length)
         {
-            for (i = start; i < wordList.length + 1; i++)
+            for (int i = start; i < wordList.length + 1; i++)
             {
                 if (isSentenceEnd(wordList[i]))
-                {
-                    startEnd.put(start, i);
+                {   
+                    lasti = i;
+                    startEnd.put(start, lasti);
                     break;
                 }
+
             }
-            start = i + 1;
+            start = lasti + 1;
         }
 
         // Iterates through every word in the word list to assign score
@@ -52,13 +55,49 @@ public class summary {
 
         int senScore = 0;
         for (int startSen : startEnd.keySet()){
-            for (i = startSen; i < startEnd.get(startSen) + 1; i ++)
+            for (int i = startSen; i < startEnd.get(startSen) + 1; i ++)
             {
-                cleaned = cleanup(wordList[i]);
-                senScore += wordScore[cleaned];
+                String cleaned = cleanup(wordList[i]);
+                senScore += wordScore.get(cleaned);
             }
             startScore.put(startSen, senScore);
             senScore = 0;
+        }
+
+        int nthMax = 5;
+        int maxMax = Collections.max(startScore.values());
+        int otherMax = 0;
+        int startKey;
+        int endKey;
+
+        for (int i = 0; i < nthMax - 1; i++){
+            for (int senSc; startScore.values())
+            {
+                if(senSc > otherMax && secSc < maxMax)
+                {
+                    otherMax = senSC;
+                }
+                
+                for (int x = 0; x < startScore.size() + 1; x ++)
+                {
+                    if (startScore.keySet[x] == otherMax)
+                    {
+                        startKey = startScore.keySet[x];
+                        if (x = startScore.size()){
+                            endKey = wordList.length;
+                        } else {
+                            endKey = startScore.keySet[x+1];
+                        }
+                    }
+                }
+
+                for (int j = startKey; j < endKey + 1; j++)
+                {
+                    System.out.println(wordList[j]);
+                }
+            }
+            maxMax = otherMax;
+            otherMax = 0;
         }
 
     }
@@ -93,9 +132,9 @@ public class summary {
         char[] wordChar = word.toCharArray();
         if (wordChar[wordChar.length-1] == '.'){
             if (Character.isLowerCase(wordChar[0])){
-                return true
+                return true;
             }
         }
-        return false
+        return false;
     }
 }
