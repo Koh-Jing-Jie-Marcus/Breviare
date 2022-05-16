@@ -7,7 +7,7 @@ public class summary {
     public static void main (String args[])
     {
         // Gets input, self explanatory
-        String para = get_input(); 
+        String para = getInput(); 
 
         // Splits raw input into its constituent words (roughly, this will be cleaned up later)
         String[] wordList = para.split(" "); 
@@ -16,7 +16,7 @@ public class summary {
         HashMap<String, Integer> wordScore = new HashMap<String, Integer>();
 
         // Iterates through every word in the word list
-        int old_score;
+        int oldScore;
         for (String word : wordList){
 
             // Cleans up word. 
@@ -24,26 +24,37 @@ public class summary {
 
             if (wordScore.containsKey(cleaned))
             {
-                old_score = wordScore.get(word);
+                oldScore = wordScore.get(word);
                 
             } else {
-                old_score = 0;
+                oldScore = 0;
             }
             wordScore.put(word, old_score + 1)
         }
+        
     }
 
-    private static String get_input () // Gets input
+    private static String getInput () // Gets input
     {
         Scanner scanner = new Scanner (System.in);
-        String raw_input = scanner.nextLine();
-        return raw_input;
+        String rawInput = scanner.nextLine();
+        return rawInput;
     }
 
     private static String cleanup (String word)
     {
-        String raw_word = word.toLowerCase();
-        String cleaned_word;
-        for 
+        String rawWord = word.toLowerCase();
+        String cleanedWord = "";
+        for (char ch: rawWord.toCharArray())
+        {
+            int asciiVal = (int) ch;
+            if (asciiVal > 47 && asciiVal < 58 || 
+                asciiVal > 65 && asciiVal < 91 || 
+                asciiVal > 96 && asciiVal < 123)
+            {
+                cleanedWord += ch;
+            }
+        }
+        return cleanedWord
     }
 }
