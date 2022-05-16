@@ -1,5 +1,16 @@
 import java.util.*;
 
+
+// TODO: 
+// Clean up stuff, dont put everything in Main(), split into different functions
+// Remove the stupid scanner try/except, the error only exists in eclipse
+// Make another input function for number of iterations (current set at 5)
+// Clean up or amend maxMax and stuff. The max score sentence doesnt print currently
+// Rank the sentences, and return them chronologically. Not v impt, but makes the output nicer
+// Test the code. I still dk if its working or not.
+// Think of more possible exceptions to '.'? Rn (n.d.) will trigger it, maybe add a list of exclusive words?
+// After that can unit test each stuff, i dont even know if its properly working lol
+
 public class summarizer {
     public static void main (String args[])
     {
