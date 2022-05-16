@@ -104,9 +104,20 @@ public class summarizer {
 
     public static String getInput () // Gets input
     {
-        Scanner scanner = new Scanner (System.in);
-        String rawInput = scanner.nextLine();
-        return rawInput;
+        Scanner scanner = null;
+        try
+        {
+            scanner = new Scanner (System.in);
+            String rawInput = scanner.nextLine();
+            return rawInput;
+        }
+        finally
+        {
+            if (scanner!=null)
+            {
+                scanner.close();
+            }
+        }
     }
 
     public static String cleanup (String word)
