@@ -15,11 +15,16 @@ public class summary {
         // Generates a HashMap (dictionary) to store the indiviual scores of each word
         HashMap<String, Integer> wordScore = new HashMap<String, Integer>();
 
+        // Additional HashMap to store where the sentences starts and end
+        HashMap<Integer, Integer> startEnd = new HashMap<Integer, Integer>();
+
+
+
         // Iterates through every word in the word list
         int oldScore;
         for (String word : wordList){
 
-            // Cleans up word. 
+            // Cleans up word
             String cleaned = cleanup(word);
 
             if (wordScore.containsKey(cleaned))
@@ -29,9 +34,9 @@ public class summary {
             } else {
                 oldScore = 0;
             }
-            wordScore.put(word, old_score + 1)
+            wordScore.put(word, old_score + 1);
         }
-        
+
     }
 
     private static String getInput () // Gets input
@@ -55,6 +60,18 @@ public class summary {
                 cleanedWord += ch;
             }
         }
-        return cleanedWord
+        return cleanedWord;
+    }
+
+    private static boolean isSentenceEnd (String word)
+    {   
+        // String[] fakeStop = {"Mr.", "Mrs", }; NOT IN USE, can hardcode if bottom doesnt work as well
+        char[] wordChar = word.toCharArray();
+        if (wordChar[wordChar.length-1] == '.'){
+            if (Character.isLowerCase(wordChar[0])){
+                return true
+            }
+        }
+        return false
     }
 }
