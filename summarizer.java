@@ -19,7 +19,7 @@ public class summarizer {
         String para = getInput(); 
 
         // Gets input for number of summarized sentences to output
-        Sys
+        System.out.println("Input number of output sentences you want")
         int numOutput = (int) getInput();
 
         // TODO: Add a check for if numOutput is > the total sentences in the main text. Maybe try/except?
