@@ -19,8 +19,8 @@ public class summarizer {
         String para = getInput(); 
 
         // Gets input for number of summarized sentences to output
-        System.out.println("Input number of output sentences you want")
-        int numOutput = (int) getInput();
+        System.out.println("Input number of output sentences you want");
+        int numOutput = Integer.parseInt(getInput());
 
         // TODO: Add a check for if numOutput is > the total sentences in the main text. Maybe try/except?
 
@@ -45,7 +45,7 @@ public class summarizer {
         // Assigns scores for each sentence
         startScore.putAll(setScore(wordScore, startEnd, wordList));
 
-        int upperbound = 99999 // lmao
+        int upperbound = 99999; // lmao
         for (int j = 0; j < numOutput; j++)
         {
            upperbound = maxScores(startScore, startEnd, wordList, upperbound);
