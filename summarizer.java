@@ -12,7 +12,7 @@ import java.util.*;
 // After that can unit test each stuff, i dont even know if its properly working lol
 
 public class summarizer {
-    public static void main (String args[])
+        public static void main (String args[])
     {
         // Gets input for the main chunk of text to be summarized, self explanatory
         System.out.println("Input the chunk of text you want summarised");
@@ -77,7 +77,7 @@ public class summarizer {
 
     public static String getInput () // Gets input
     {
-        scanner = new Scanner (System.in);
+        Scanner scanner = new Scanner (System.in);
         String rawInput = scanner.nextLine();
         return rawInput;
     }
@@ -119,7 +119,7 @@ public class summarizer {
         for (int key : sSmap.keySet())
         {
             senScore = sSmap.get(key);
-            if (senScore > max && senScore < upper)
+            if (senScore > maxScore && senScore < upper)
             {
                 maxScore = senScore;
                 maxKey = key;
@@ -127,7 +127,7 @@ public class summarizer {
         }
         for (int i = maxKey; i < sEMap.get(maxKey) + 1; i++)
         {
-            System.out.println(wList[i] + " ");
+            System.out.print(wList[i] + " ");
         }
         return maxScore;
     }
@@ -141,18 +141,19 @@ public class summarizer {
             String cleaned = cleanup(word);
             if (tempMap.containsKey(cleaned))
             {
-                oldScore = tempMap.get(word);
+                //System.out.println(cleaned);
+                oldScore = tempMap.get(cleaned);
             } else {
                 oldScore = 0;
             }
-            tempMap.put(word, oldScore + 1);
+            tempMap.put(cleaned, oldScore + 1);
         }
         return tempMap;
     }
 
     public static Map<Integer, Integer> setScore (Map<String, Integer> scoreMap, Map<Integer, Integer> startMap, String[] wList)
     {
-        HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
+        HashMap<Integer, Integer> tempMap = new HashMap<Integer, Integer>();
         int senScore = 0;
         for (int startSen : startMap.keySet()){
             {
