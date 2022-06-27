@@ -8,8 +8,8 @@ public class summarizerv2 {
         System.out.println("Input the chunk of text you want summarised");
         String para = getInput(); 
 
-        // Splits raw paragraph into its constituent words (roughly, this will be cleaned up later)
-        String[] wordList = para.split(" "); 
+        // Gets a rough wordlist from the raw input
+        String[] wordList = getWordList(para);
 
         // Additional HashMap to store where the sentences starts and end
         HashMap<Integer, Integer> startEnd = new HashMap<Integer, Integer>();
@@ -31,6 +31,7 @@ public class summarizerv2 {
             System.out.println("Input number of output sentences you want");
             numOutput = Integer.parseInt(getInput());
         }
+        System.out.println("\n\n");
 
         // Iterates through every word in the word list to assign score
         Double[] allScore = getScore(wordList, startEnd);
@@ -38,20 +39,60 @@ public class summarizerv2 {
         // Assigns scores for each sentence
         startScore.putAll(setScore(allScore, startEnd));
 
-        // gets highest scoring sentences
+        // Gets highest scoring sentences
         int[] bestSentences = rankSentences(startScore, startEnd, numOutput);
 
-        Arrays.sort(bestSentences);
-        
-        for (int i = 0; i < bestSentences.length; i++)
+        // Prints sentences chronologically.
+        printSentences(bestSentences, wordList, startEnd);
+    }
+
+    public static String[] getWordList (String raw)
+    {
+        String[] tempArray = raw.split(" ");
+        String word;
+        String newWord;
+        Boolean clean;
+        for (int i = 0; i < tempArray.length; i++)
         {
-            int sent = bestSentences[i];
+            word = tempArray[i];
+            newWord = "";
+            clean = false;
+            for (int j = 0; j < word.length(); j ++)
+            {
+                if (word.charAt(j) == '.' && j < word.length() - 1)
+                {
+                    if(!isNumber(word.charAt(j-1)) && !isLetter(word.charAt(j+1)))
+                    {
+                        for (int k = 0; k <= j; k ++)
+                        {
+                            newWord += word.charAt(k);
+                            clean = true;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (!clean)
+            {
+                newWord = word;
+            }
+            tempArray[i] = newWord;
+        }
+        return tempArray;
+    }
+
+
+    public static void printSentences (int[] bestSent, String[] wList, Map<Integer, Integer> startEnd)
+    {
+        Arrays.sort(bestSent);
+        for (int i = 0; i < bestSent.length; i++)
+        {
+            int sent = bestSent[i];
             for (int j = sent; j < startEnd.get(sent)+1; j++)
             {
-                System.out.print(wordList[j] + " ");
+                System.out.print(wList[j] + " ");
             }
-            System.out.println("");
-            System.out.println("");
+            System.out.println("\n");
         }
     }
 
@@ -139,7 +180,10 @@ public class summarizerv2 {
         {
             return false;
         }
-        if (wordChar[wordChar.length-1] == '.')
+        if 
+        (wordChar[wordChar.length-1] == '.' || 
+        (wordChar[wordChar.length - 1] == '"' && (wordChar[wordChar.length - 2] == '.' || wordChar[wordChar.length-1] == '!' || wordChar[wordChar.length-1] == '?' )) || 
+        wordChar[wordChar.length-1] == '?' || wordChar[wordChar.length-1] == '!')
         {
             return true;
         }
@@ -227,4 +271,14 @@ public class summarizerv2 {
         return tempMap;
     }
 
+    public static boolean isLetter(char c) 
+    {
+        return (c >= 'a' && c <= 'z') ||
+               (c >= 'A' && c <= 'Z');
+    }
+
+    public static boolean isNumber(char c)
+    {
+        return (c >= '0' && c <= '9');
+    }
 }
