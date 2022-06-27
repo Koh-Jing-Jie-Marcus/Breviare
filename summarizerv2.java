@@ -147,6 +147,24 @@ public class summarizerv2 {
     {
         Scanner scanner = new Scanner (System.in);
         String rawInput = scanner.nextLine();
+        String input;
+        int emptyCount = 0;
+        while(scanner.hasNextLine())
+        {
+            input = scanner.nextLine();
+            if (input.isEmpty())
+            {
+                emptyCount += 1;
+            } else {
+                emptyCount = 0;
+                rawInput += input;
+            }
+            if (emptyCount == 2)
+            {
+                break;
+            }
+            rawInput += input;
+        }
         return rawInput;
     }
     
