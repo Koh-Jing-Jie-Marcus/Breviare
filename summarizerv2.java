@@ -187,9 +187,9 @@ public class summarizerv2 {
 
     public static boolean isSentenceEnd (String word)
     {   
-        String[] fakeStop = {"mr.", "mrs.", "al.", "i.e.", "n.d.", "feat."}; // Changed to hardcode
+        String[] fakeStop = {"mr.", "mrs.", "al.", "i.e.", "n.d.", "feat.", "dr."}; // Changed to hardcode
         for (int i = 0; i < fakeStop.length; i++){
-            if (word.toLowerCase() == fakeStop[i]){
+            if (word.toLowerCase().equals(fakeStop[i])){
                 return false;
             }
         }
@@ -233,6 +233,7 @@ public class summarizerv2 {
                 Double sentenceOccur = 0.0;
                 for (int j = currentSentence; j < nextSentence; j++)
                 {
+
                     if (cleanup(wList[j]).equals(cleaned))
                     {
                         sentenceOccur += 1;
@@ -251,6 +252,7 @@ public class summarizerv2 {
                         }
                     }
                 }
+
                 rawWeight = sentenceOccur * Math.log(docLength / documentOccur);
                 wholeScore[i] = rawWeight;
                 localScore.put(cleaned, rawWeight);
@@ -265,7 +267,7 @@ public class summarizerv2 {
         int placeholder = 0;
         for (int startSen: startG.keySet())
         {
-            if (currentIter >= startSen)
+            if (currentIter >= startSen && currentIter <= startG.get(startSen))
             {
                 placeholder = startSen;
                 break;
