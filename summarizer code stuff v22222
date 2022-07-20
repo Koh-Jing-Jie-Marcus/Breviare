@@ -1,4 +1,5 @@
 
+
 public class SummarizeActivity extends AppCompatActivity {
 
     TextView messageTextView;
@@ -28,7 +29,9 @@ public class SummarizeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                messageTextView.setText("Summarizing in Progress");
+                messageTextView.setText("Summarizing in Progress ...");
+                
+                //summarizing code below!!
                 class summarizer {
                     public void main(String args[]) {
                         // Gets input for the main chunk of text to be summarized, self explanatory
@@ -51,13 +54,10 @@ public class SummarizeActivity extends AppCompatActivity {
 
                         int numOutput = finalNumber;
 
-                        // Checks if specified number of output is more than possible
+                        // to be displayed if specified number of output is more than possible
                         while (numOutput > startEnd.size()) {
-                            System.out.println("Error. The number of output sentences exceeds the total number of sentences in the source text.");
-                            System.out.println("Input number of output sentences you want");
-                            numOutput = Integer.parseInt(getInput());
+                            messageTextView.setText("Error. The number of output sentences exceeds the total number of sentences in the source text.");
                         }
-                        System.out.println("\n\n");
 
                         // Iterates through every word in the word list to assign score
                         Double[] allScore = getScore(wordList, startEnd);
@@ -106,9 +106,8 @@ public class SummarizeActivity extends AppCompatActivity {
                         for (int i = 0; i < bestSent.length; i++) {
                             int sent = bestSent[i];
                             for (int j = sent; j < startEnd.get(sent) + 1; j++) {
-                                System.out.print(wList[j] + " ");
+                                messageTextView.setText(wList[j] + " ");
                             }
-                            System.out.println("\n");
                         }
                     }
 
