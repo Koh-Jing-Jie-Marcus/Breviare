@@ -1,0 +1,373 @@
+package com.example.breviarev2;
+
+import static android.content.ContentValues.TAG;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.*;
+import java.lang.Math;
+
+public class SummarizeActivity extends AppCompatActivity {
+
+    TextView messageTextView;
+    private EditText lines;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_summarize);
+        String message = getIntent().getStringExtra("message_key");
+        messageTextView = (TextView) findViewById(R.id.tvNewText);
+        messageTextView.setText(message);
+        Button button = (Button) findViewById(R.id.btnSum);
+        Button convert = (Button) findViewById(R.id.btnConvert);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //converts user input from text to string and then to and integer value
+                lines = (EditText) findViewById(R.id.ptLines);
+                String value = lines.getText().toString();
+                int number = 0;
+                if (!value.isEmpty()) {
+                    number = Integer.parseInt(value);
+                }
+
+                int finalNumber = number;
+
+                //summarizing code below!!
+
+                String para = message;
+
+                para = para.replaceAll("[\n\t]", "");
+
+                // Gets a rough wordlist from the raw input
+                String[] wordList = getWordList(para);
+
+                // String var for output
+                String output = "";
+
+                // Additional HashMap to store where the sentences starts and end
+                HashMap<Integer, Integer> startEnd = new HashMap<Integer, Integer>();
+
+                // Additional HashMap to store scores for sentences
+                HashMap<Integer, Double> startScore = new HashMap<Integer, Double>();
+
+                startEnd.put(1,2);
+
+                // Gets all the sentence ends
+                int sEStart = 0;
+                int sELast = 0;
+                int sELength = wordList.length;
+                String wordCheck;
+                String[] fakeStop = {"mr.", "mrs.", "al.", "i.e.", "n.d.", "feat."};
+                String lastChar;
+
+                while (sEStart < sELength)
+                {
+                    for (int i = sEStart; i < sELength; i++)
+                    {
+                        wordCheck = wordList[i];
+                        lastChar = wordCheck.charAt(wordCheck.length() - 1) + "";
+                        if (lastChar.equals("."))
+                        {
+                            sELast = i;
+                            startEnd.put(sEStart, sELast);
+                            break;
+                        }
+                    }
+                    sEStart = sELast + 1;
+                }
+
+                // Gets input for number of summarized sentences to output
+
+                int numOutput = finalNumber;
+
+                // to be displayed if specified number of output is more than possible
+                while (numOutput > startEnd.size()) {
+                    messageTextView.setText("Error. The number of output sentences exceeds the total number of sentences in the source text.");
+                    System.exit(0);
+
+                }
+                // Iterates through every word in the word list to assign score
+                Double[] allScore = getScore(wordList, startEnd);
+
+                // Assigns scores for each sentence
+                startScore.putAll(setScore(allScore, startEnd));
+
+                // Gets highest scoring sentences
+                int[] bestSentences = rankSentences(startScore, startEnd, numOutput);
+
+                // Prints sentences chronologically.
+                output = printSentences(bestSentences, wordList, startEnd);
+
+                messageTextView.setText(output);
+            }
+        });
+        convert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String path  = getExternalFilesDir(null).toString() + "/user.pdf";
+                File file = new File(path);
+
+                if(!file.exists())
+                {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Document document = new Document(PageSize.A4);
+                try {
+                    PdfWriter.getInstance(document, new FileOutputStream(file.getAbsoluteFile()));
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                document.open();
+
+                Font myfont = new Font(Font.FontFamily.HELVETICA, 24, Font.BOLD);
+
+                Paragraph paragraph = new Paragraph();
+                paragraph.add(new Paragraph(messageTextView.getText().toString(), myfont));
+                paragraph.add(new Paragraph("\n"));
+
+                try {
+                    document.add(paragraph);
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                }
+
+                document.close();
+
+                Toast.makeText(SummarizeActivity.this, "PDF Created Successfully!", Toast.LENGTH_SHORT).show();
+
+            }
+
+        });
+    }
+
+    public String[] getWordList(String raw) {
+        String[] tempArray = raw.split(" ");
+        String word;
+        String newWord;
+        Boolean clean;
+        for (int i = 0; i < tempArray.length; i++) {
+            word = tempArray[i];
+            newWord = "";
+            clean = false;
+            for (int j = 0; j < word.length(); j++) {
+                if (word.charAt(j) == '.' && j < word.length() - 1) {
+                    if (!isNumber(word.charAt(j - 1)) && !isLetter(word.charAt(j + 1))) {
+                        for (int k = 0; k <= j; k++) {
+                            newWord += word.charAt(k);
+                            clean = true;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (!clean) {
+                newWord = word;
+            }
+            tempArray[i] = newWord;
+        }
+        return tempArray;
+    }
+
+    public String printSentences(int[] bestSent, String[] wList, Map<Integer, Integer> startEnd) {
+        Arrays.sort(bestSent);
+        String temp = "";
+        for (int i = 0; i < bestSent.length; i++) {
+            int sent = bestSent[i];
+            for (int j = sent; j < startEnd.get(sent) + 1; j++) {
+                temp += (wList[j] + " ");
+            }
+        }
+        return temp;
+    }
+
+    public int[] rankSentences(Map<Integer, Double> sSMap, Map<Integer, Integer> sEMap, int maxOut) {
+        int[] tempList = new int[maxOut];
+        Double upper = 99999.0;
+        Double max;
+        //messageTextView.setText("ligma");
+        int maxKey = 0;
+        for (int i = 0; i < maxOut; i++) {
+            max = 0.0;
+            for (int startSen : sSMap.keySet()) {
+                Double currentScore = sSMap.get(startSen);
+                if (currentScore > max && currentScore < upper) {
+                    max = currentScore;
+                    maxKey = startSen;
+                }
+            }
+            upper = max;
+            tempList[i] = maxKey;
+        }
+        return tempList;
+    }
+
+    public Map<Integer, Integer> getEnd(String[] wList) {
+        HashMap<Integer, Integer> tempMap = new HashMap<Integer, Integer>();
+        int start = 0;
+        int lasti = 0;
+        int Length = wList.length;
+
+        while (start < Length) {
+            for (int i = start; i < Length + 1; i++) {
+                if (isSentenceEnd(wList[i])) {
+                    lasti = i;
+                    tempMap.put(start, lasti);
+                    break;
+                }
+            }
+            start = lasti + 1;
+        }
+        return tempMap;
+    }
+
+    public String getInput() // Gets input
+    {
+        Scanner scanner = new Scanner(System.in);
+        String rawInput = scanner.nextLine();
+        return rawInput;
+    }
+
+    public String cleanup(String word) {
+        String rawWord = word.toLowerCase();
+        String cleanedWord = "";
+        for (char ch : rawWord.toCharArray()) {
+            int asciiVal = (int) ch;
+            if (asciiVal > 47 && asciiVal < 58 ||
+                    asciiVal > 65 && asciiVal < 91 ||
+                    asciiVal > 96 && asciiVal < 123) {
+                cleanedWord += ch;
+            }
+        }
+        return cleanedWord;
+    }
+
+    public boolean isSentenceEnd(String word) {
+        String[] fakeStop = {"mr.", "mrs.", "al.", "i.e.", "n.d.", "feat."}; // Changed to hardcode
+        for (int i = 0; i < fakeStop.length; i++)
+        {
+            if (word.toLowerCase() == fakeStop[i])
+            {
+                return false;
+            }
+        }
+        char[] wordChar = word.toCharArray();
+        if (wordChar.length > 3 && wordChar[wordChar.length - 3] == '.')
+        {
+            return false;
+        }
+        if
+        (wordChar[wordChar.length - 1] == '.' ||
+                (wordChar[wordChar.length - 1] == '"' && (wordChar[wordChar.length - 2] == '.' || wordChar[wordChar.length - 1] == '!' || wordChar[wordChar.length - 1] == '?')) ||
+                wordChar[wordChar.length - 1] == '?' || wordChar[wordChar.length - 1] == '!')
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public Double[] getScore(String[] wList, Map<Integer, Integer> startE) {
+        HashMap<String, Double> localScore = new HashMap<String, Double>(); //I dont actually remember whats this used for, so im just using it to track which words have been checked
+        Double[] wholeScore = new Double[wList.length];
+        int docLength = startE.size();
+        int oldSentence = -999;
+        Double rawWeight;
+        for (int i = 0; i < wList.length; i++) {
+            String word = wList[i];
+            String cleaned = cleanup(word);
+            int currentSentence = getSentenceNum(i, startE);
+            int nextSentence = startE.get(currentSentence) + 1;
+            if (currentSentence != oldSentence) {
+                localScore.clear();
+            }
+            if (localScore.containsKey(cleaned)) {
+                wholeScore[i] = localScore.get(cleaned);
+                continue;
+            } else {
+                Double sentenceOccur = 0.0;
+                for (int j = currentSentence; j < nextSentence; j++) {
+                    if (cleanup(wList[j]).equals(cleaned)) {
+                        sentenceOccur += 1;
+                    }
+                }
+
+                Double documentOccur = 0.0;
+                for (int startSen : startE.keySet()) {
+                    for (int k = startSen; k < startE.get(startSen) + 1; k++) {
+                        if (cleanup(wList[k]).equals(cleaned)) {
+                            documentOccur += 1;
+                            break;
+                        }
+                    }
+                }
+                rawWeight = sentenceOccur * Math.log(docLength / documentOccur);
+                wholeScore[i] = rawWeight;
+                localScore.put(cleaned, rawWeight);
+            }
+            oldSentence = currentSentence;
+        }
+        return wholeScore;
+    }
+
+    public int getSentenceNum(int currentIter, Map<Integer, Integer> startG) {
+        int placeholder = 0;
+        for (int startSen : startG.keySet()) {
+            if (currentIter >= startSen) {
+                placeholder = startSen;
+                break;
+            }
+        }
+        return placeholder;
+    }
+
+    public Map<Integer, Double> setScore(Double[] scoreList, Map<Integer, Integer> startMap) {
+        HashMap<Integer, Double> tempMap = new HashMap<Integer, Double>();
+        for (int startSen : startMap.keySet()) {
+            Double score = 0.0;
+            for (int i = startSen; i < startMap.get(startSen) + 1; i++) {
+                score += scoreList[i];
+            }
+            tempMap.put(startSen, score);
+        }
+        return tempMap;
+    }
+
+    public boolean isLetter(char c) {
+        return (c >= 'a' && c <= 'z') ||
+                (c >= 'A' && c <= 'Z');
+    }
+
+    public boolean isNumber(char c) {
+        return (c >= '0' && c <= '9');
+    }
+}
